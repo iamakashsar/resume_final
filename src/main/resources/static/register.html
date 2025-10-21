@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Sign Up | Resume Ecosystem</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      width: 400px;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 { color: #1565c0; margin-bottom: 20px; font-weight: 600; }
+    .card { background: #f7f9fc; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; outline: none; transition: all 0.2s; }
+    input:focus { border-color: #42a5f5; box-shadow: 0 0 5px rgba(66, 165, 245, 0.4); }
+    button { background: #1565c0; color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; cursor: pointer; transition: all 0.3s; }
+    button:hover { background: #0d47a1; }
+    .small { font-size: 13px; color: #666; margin-top: 10px; }
+    p { font-size: 14px; }
+    p a { color: #1565c0; text-decoration: none; font-weight: 500; }
+    p a:hover { text-decoration: underline; }
+    #otpSection input { margin-top: 10px; }
+    @media (max-width: 480px) { .container { width: 90%; padding: 20px; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Sign Up</h2>
+  <div class="card">
+    <input id="regName" placeholder="Full Name" />
+    <input id="regEmail" placeholder="Email" type="email" />
+    <input id="regPassword" placeholder="Password" type="password" />
+    <button id="sendOtpBtn" onclick="sendOTP()">Send Verification Code</button>
+
+    <div id="otpSection" style="display:none; margin-top:1rem;">
+      <input id="otpCode" placeholder="Enter 6-digit code" maxlength="6" />
+      <button onclick="verifyOTP()">Verify & Register</button>
+    </div>
+
+    <p id="msg" class="small"></p>
+  </div>
+  <p>Already have an account? <a href="login.html">Login here</a></p>
+</div>
+
+<script>
+const apiBase = 'http://localhost:8080/api'; // Update if backend runs on different port
+let verificationEmail = '';
+let passwordGlobal = '';
+let nameGlobal = '';
+
+// Display messages
+function setMsg(t, isError=false) {
+  const el = document.getElementById('msg');
+  el.innerText = t;
+  el.style.color = isError ? 'red' : 'green';
+}
+
+// Send OTP
+async function sendOTP() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+  if (!name || !email || !password) return setMsg('Please fill all fields', true);
+
+  try {
+    const res = await fetch(apiBase + '/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    if (res.ok) {
+      setMsg('OTP sent to your email. Please check your inbox.');
+      document.getElementById('otpSection').style.display = 'block';
+      verificationEmail = email;
+      passwordGlobal = password;
+      nameGlobal = name;
+      document.getElementById('sendOtpBtn').disabled = true;
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setMsg('Error sending OTP: ' + (data.message || 'Server error'), true);
+    }
+  } catch (err) {
+    console.error(err);
+    setMsg('Error sending OTP. Try again.', true);
+  }
+}
+
+// Verify OTP and register
+async function verifyOTP() {
+  const otp = document.getElementById('otpCode').value.trim();
+  if (!otp) return setMsg('Please enter OTP', true);
+
+  try {
+    const res = await fetch(apiBase + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: verificationEmail, password: passwordGlobal, name: nameGlobal, otp })
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      data = { message: await res.text() }; // fallback if not JSON
+    }
+
+    if (res.ok) {
+      localStorage.setItem('token', data.token);
+      setMsg('Registered successfully! Redirecting to Resume Builder...');
+      setTimeout(() => window.location.href = 'resume.html', 1500);
+    } else {
+      // Display backend error message
+      const msg = data?.message || 'Verification failed';
+      setMsg(msg, true);
+    }
+  } catch (err) {
+    console.error(err);
+    setMsg('Error during verification. Try again.', true);
+  }
+}
+</script>
+</body>
+</html>

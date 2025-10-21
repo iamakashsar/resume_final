@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Resume Builder | Resume Ecosystem</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+  body { margin:0; font-family:"Poppins", sans-serif; background:#e3f2fd; }
+  .container { max-width:900px; margin:20px auto; background:#fff; border-radius:12px; padding:25px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+  h2,h3,h4,h5 { color:#1565c0; margin:5px 0; }
+  .card { background:#f7f9fc; padding:20px; margin-bottom:20px; border-radius:10px; border:1px solid #e0e0e0; }
+  input, textarea, select { width:100%; padding:10px; margin:5px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; }
+  input[type="file"] { padding:3px; }
+  button { background:#1565c0; color:white; padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-size:15px; margin-top:8px; }
+  button:hover { background:#0d47a1; }
+  label { font-weight:500; margin-top:5px; display:block; }
+  .flex { display:flex; gap:15px; flex-wrap:wrap; }
+  .preview { background:#f1f1f1; padding:20px; border-radius:10px; margin-top:20px; }
+  .profile-pic { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div class="flex" style="justify-content:space-between;align-items:center;">
+    <h2>Resume Builder</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- User Info -->
+  <div class="card">
+    <h3>Profile Information</h3>
+    <input id="userName" placeholder="Full Name" oninput="updatePreview()"/>
+    <input id="userEmail" placeholder="Email" oninput="updatePreview()"/>
+    <label>Profile Picture</label>
+    <input type="file" id="userPic" accept="image/*" onchange="handlePicChange(event)"/>
+    <textarea id="careerObjective" placeholder="Career Objective" rows="3" oninput="updatePreview()"></textarea>
+  </div>
+
+  <!-- Education -->
+  <div class="card">
+    <h3>Education</h3>
+    <div id="eduContainer"></div>
+    <button onclick="addEducation()">Add Education</button>
+  </div>
+
+  <!-- Projects -->
+  <div class="card">
+    <h3>Projects</h3>
+    <div id="projContainer"></div>
+    <button onclick="addProject()">Add Project</button>
+  </div>
+
+  <!-- Skills -->
+  <div class="card">
+    <h3>Skills</h3>
+    <input id="skillsInput" placeholder="Enter skills separated by comma" oninput="updatePreview()"/>
+  </div>
+
+  <!-- Achievements -->
+  <div class="card">
+    <h3>Achievements</h3>
+    <div id="achContainer"></div>
+    <button onclick="addAchievement()">Add Achievement</button>
+  </div>
+
+  <!-- Hobbies -->
+  <div class="card">
+    <h3>Hobbies</h3>
+    <input id="hobbiesInput" placeholder="Enter hobbies separated by comma" oninput="updatePreview()"/>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex">
+    <button onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <!-- Preview -->
+  <div class="card preview" id="preview"></div>
+</div>
+
+<script>
+let eduCount=0, projCount=0, achCount=0;
+let profilePicBase64 = null;
+
+function logout() { localStorage.removeItem('token'); window.location='login.html'; }
+
+function addEducation(){
+  eduCount++;
+  const container=document.getElementById('eduContainer');
+  const div=document.createElement('div');
+  div.id='edu'+eduCount;
+  div.className='card';
+  div.innerHTML=`<input placeholder="Degree" oninput="updatePreview()"/><input placeholder="Institution" oninput="updatePreview()"/><input type="date" onchange="updatePreview()"/> <button onclick="this.parentElement.remove();updatePreview()">Remove</button>`;
+  container.appendChild(div);
+  updatePreview();
+}
+
+function addProject(){
+  projCount++;
+  const container=document.getElementById('projContainer');
+  const div=document.createElement('div');
+  div.id='proj'+projCount;
+  div.className='card';
+  div.innerHTML=`<input placeholder="Project Title" oninput="updatePreview()"/><textarea placeholder="Project Description" rows="2" oninput="updatePreview()"></textarea> <button onclick="this.parentElement.remove();updatePreview()">Remove</button>`;
+  container.appendChild(div);
+  updatePreview();
+}
+
+function addAchievement(){
+  achCount++;
+  const container=document.getElementById('achContainer');
+  const div=document.createElement('div');
+  div.id='ach'+achCount;
+  div.className='card';
+  div.innerHTML=`<input placeholder="Title" oninput="updatePreview()"/><input placeholder="Organization" oninput="updatePreview()"/><input type="date" onchange="updatePreview()"/><textarea placeholder="Description" rows="2" oninput="updatePreview()"></textarea> <button onclick="this.parentElement.remove();updatePreview()">Remove</button>`;
+  container.appendChild(div);
+  updatePreview();
+}
+
+// Handle profile picture
+function handlePicChange(event){
+  const file = event.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      profilePicBase64 = e.target.result;
+      updatePreview();
+    }
+    reader.readAsDataURL(file);
+  } else {
+    profilePicBase64 = null;
+    updatePreview();
+  }
+}
+
+// Update preview
+function updatePreview(){
+  const preview = document.getElementById('preview');
+  preview.innerHTML = '';
+  
+  const name = document.getElementById('userName').value;
+  const email = document.getElementById('userEmail').value;
+  const career = document.getElementById('careerObjective').value;
+  const skills = document.getElementById('skillsInput').value;
+  const hobbies = document.getElementById('hobbiesInput').value;
+
+  if(profilePicBase64){
+    const img = document.createElement('img');
+    img.src = profilePicBase64;
+    img.className = 'profile-pic';
+    preview.appendChild(img);
+  }
+
+  preview.innerHTML += `<h3>${name}</h3><p>${email}</p><h4>Career Objective</h4><p>${career}</p>`;
+
+  // Education
+  const eduDivs=document.querySelectorAll('#eduContainer > div');
+  if(eduDivs.length){
+    preview.innerHTML+='<h4>Education</h4>';
+    eduDivs.forEach(ed=>{
+      const vals = ed.querySelectorAll('input');
+      preview.innerHTML+=`<p>${vals[0].value} - ${vals[1].value} (${vals[2].value})</p>`;
+    });
+  }
+
+  // Projects
+  const projDivs=document.querySelectorAll('#projContainer > div');
+  if(projDivs.length){
+    preview.innerHTML+='<h4>Projects</h4>';
+    projDivs.forEach(p=>{
+      const vals = p.querySelectorAll('input,textarea');
+      preview.innerHTML+=`<p><b>${vals[0].value}</b>: ${vals[1].value}</p>`;
+    });
+  }
+
+  // Skills
+  if(skills) preview.innerHTML+='<h4>Skills</h4><p>'+skills+'</p>';
+
+  // Achievements
+  const achDivs=document.querySelectorAll('#achContainer > div');
+  if(achDivs.length){
+    preview.innerHTML+='<h4>Achievements</h4>';
+    achDivs.forEach(a=>{
+      const vals = a.querySelectorAll('input,textarea');
+      preview.innerHTML+=`<p><b>${vals[0].value}</b> @ ${vals[1].value} (${vals[2].value}): ${vals[3].value}</p>`;
+    });
+  }
+
+  // Hobbies
+  if(hobbies) preview.innerHTML+='<h4>Hobbies</h4><p>'+hobbies+'</p>';
+}
+
+// Download PDF by sending data to backend
+async function downloadPDF(){
+  const token = localStorage.getItem('token');
+  if(!token){ alert('Please login first'); return; }
+
+  const data = {
+    "Name": document.getElementById('userName').value,
+    "Email": document.getElementById('userEmail').value,
+    "Career Objective": document.getElementById('careerObjective').value,
+    "Skills": document.getElementById('skillsInput').value,
+    "Hobbies": document.getElementById('hobbiesInput').value,
+    "ProfilePic": profilePicBase64
+  };
+
+  document.querySelectorAll('#eduContainer > div').forEach((ed,i)=>{
+    const vals = ed.querySelectorAll('input');
+    data[`Education ${i+1}`] = `${vals[0].value} - ${vals[1].value} (${vals[2].value})`;
+  });
+
+  document.querySelectorAll('#projContainer > div').forEach((p,i)=>{
+    const vals = p.querySelectorAll('input,textarea');
+    data[`Project ${i+1}`] = `${vals[0].value}: ${vals[1].value}`;
+  });
+
+  document.querySelectorAll('#achContainer > div').forEach((a,i)=>{
+    const vals = a.querySelectorAll('input,textarea');
+    data[`Achievement ${i+1}`] = `${vals[0].value} @ ${vals[1].value} (${vals[2].value}): ${vals[3].value}`;
+  });
+
+  try {
+    const res = await fetch('/api/pdf/download', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer ' + token
+      },
+      body: JSON.stringify(data)
+    });
+
+    if(res.ok){
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } else {
+      const errText = await res.text();
+      alert('Error generating PDF: ' + errText);
+    }
+  } catch(e){ console.error(e); alert('Error generating PDF'); }
+}
+</script>
+</body>
+</html>

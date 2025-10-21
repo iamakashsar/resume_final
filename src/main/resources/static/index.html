@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Resume Ecosystem | Home</title>
+
+  <!-- Internal CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1565c0;
+      color: #fff;
+      padding: 15px 60px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .navbar h2 {
+      font-weight: 600;
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #bbdefb;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 80vh;
+      padding: 0 20px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+
+    .hero h1 {
+      font-size: 2.3rem;
+      color: #0d47a1;
+      margin-bottom: 20px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .hero p {
+      max-width: 700px;
+      font-size: 1.1rem;
+      color: #444;
+      margin-bottom: 40px;
+    }
+
+    /* CTA BUTTONS */
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .cta-buttons a {
+      text-decoration: none;
+      background: #1565c0;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .cta-buttons a:hover {
+      background: #0d47a1;
+      transform: translateY(-2px);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background: #1565c0;
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      position: relative;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .nav-links a {
+        display: inline-block;
+        margin: 10px 10px 0 10px;
+      }
+
+      .hero h1 {
+        font-size: 1.9rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .cta-buttons a {
+        width: 80%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <h2>Resume Builder</h2>
+    <nav class="nav-links">
+      <a href="login.html">Login</a>
+      <a href="register.html">Sign Up</a>
+     
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Create Your Professional Resume in Minutes</h1>
+    <p>Join Resume Ecosystem to build your career-ready resume and manage achievements with secure login and OTP verification.</p>
+    <div class="cta-buttons">
+      <a href="register.html">Get Started</a>
+      <a href="login.html">Already have an account? Login</a>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Resume Ecosystem. All rights reserved by Akash Sar.
+  </footer>
+</body>
+</html>
