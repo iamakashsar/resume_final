@@ -99,6 +99,13 @@
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
     </dependency>
+
+		<dependency>
+  <groupId>com.sendinblue</groupId>
+  <artifactId>sib-api-v3-sdk</artifactId>
+  <version>5.2.0</version>
+</dependency>
+
   
 	</dependencies>
 
